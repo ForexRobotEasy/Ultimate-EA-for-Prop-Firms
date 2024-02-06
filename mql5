@@ -1,0 +1,69 @@
+mql5
+//+------------------------------------------------------------------+
+//| Expert Advisor Properties                                       |
+//+------------------------------------------------------------------+
+#property copyright 'Forex Robot Easy Team'
+#property link      'forexroboteasy.com'
+#property version   '1.0'
+#property strict
+#property show_inputs
+
+//+------------------------------------------------------------------+
+//| Input parameters                                                |
+//+------------------------------------------------------------------+
+input double StopLoss = 50;    // Stop loss level in pips
+input double TakeProfit = 100; // Take profit level in pips
+
+//+------------------------------------------------------------------+
+//| Expert Advisor start function                                    |
+//+------------------------------------------------------------------+
+void OnStart()
+{
+    // Perform Forex market analysis
+    double currentPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+    double previousPrice = SymbolInfoDouble(_Symbol, SYMBOL_CLOSE, 1);
+    
+    // Determine trading decision based on market analysis
+    if (currentPrice > previousPrice)
+    {
+        // Open a buy order
+        double volume = AccountFreeMargin() * 0.01 / StopLoss;
+        double sl = currentPrice - StopLoss * _Point;
+        double tp = currentPrice + TakeProfit * _Point;
+        
+        OrderSend(_Symbol, OP_BUY, volume, currentPrice, 0, sl, tp);
+    }
+    else if (currentPrice < previousPrice)
+    {
+        // Open a sell order
+        double volume = AccountFreeMargin() * 0.01 / StopLoss;
+        double sl = currentPrice + StopLoss * _Point;
+        double tp = currentPrice - TakeProfit * _Point;
+        
+        OrderSend(_Symbol, OP_SELL, volume, currentPrice, 0, sl, tp);
+    }
+    
+    // Other trading strategies and conditions can be added here
+    
+    // Print trading decision
+    Print('Trading decision: ', (currentPrice > previousPrice) ? 'Buy' : 'Sell');
+}
+
+//+------------------------------------------------------------------+
+//| Additional functions                                            |
+//+------------------------------------------------------------------+
+double AccountFreeMargin()
+{
+    // Calculate and return the account's free margin
+    return AccountBalance() - AccountMargin();
+}
+
+//+------------------------------------------------------------------+
+//| Logical conclusion                                               |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Perform necessary cleanup actions before the EA is removed
+    Print('Ultimate EA for Prop Firms has been stopped.');
+    Print('Thank you for using our software!');
+}
